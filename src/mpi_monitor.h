@@ -7,11 +7,29 @@
 #define EXTC
 #endif
 
+#include <time.h>
+
+/*
+ * Defines the expected timeouts for the heartbeat monitor
+ * Field Descriptions:
+ *  thm - Time for a message to reach the heartbeat monitor
+ *  ti - The interval between sending heartbeats
+ *  tr - Timeout for the heartbeat monitor to realize it hasn't received
+ *      a message from a node
+ *  tw - The wait time for the heartbeat monitor to declare a node is dead
+ */
+typedef struct _timeout_config {
+  struct timespec thm;
+  struct timespec ti;
+  struct timespec tr;
+  struct timespec tw;
+} timeout_config_t;
+
 /*
  * Initialize the monitor and consume the monitor process, allowing the rest of 
  * the processes to continue
  */
-EXTC int monitor_init(void);
+EXTC int monitor_init(timeout_config_t *);
 
 /*
  * Finalize and perform clean up for the monitor

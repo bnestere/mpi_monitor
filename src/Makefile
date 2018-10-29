@@ -27,3 +27,6 @@ clean:
 
 test: so $(TEST_FILENAME)
 	$(CC) $(TEST_FILENAME) -lmpi_monitor -o xtest
+	
+timeout_test: so timeout_$(TEST_FILENAME)
+	$(CC) timeout_$(TEST_FILENAME) -lmpi_monitor -o xtimeout_test
