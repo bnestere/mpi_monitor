@@ -81,22 +81,25 @@ int monitor_init(timeout_config_t *timeout_config) {
   calculate_timeout(&full_timeout, timeout_config);
 
   if(world_rank == 1) {
-    printf("monitor_init()::MONITOR - Starting wait loop\n");
     int number;
     int last_number;
+    printf("monitor_init()::Waiting for program initialization...\n");
+    nanosleep(&timeout_config->program_init, NULL);
+    printf("monitor_init()::MONITOR - Starting wait loop\n");
     while(number > -1) {
       last_number = number;
       printf("monitor_init()::MONITOR - Waiting for number..\n");
       //MPI_Recv(&number, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Irecv(&number, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &request);
-      printf("Waiting for message...\n");
+      printf("monitor_init()::Waiting for message...\n");
 
       clock_gettime(CLOCK_MONOTONIC_RAW, &current_time);
       ///print_time(&current_time, "current");
       timespec_add(&next_timeout, &full_timeout, &current_time);
 
+      print_time(&full_timeout, "fulltime");
       print_time(&current_time, "current");
-      print_time(&next_timeout, "timeout");
+      print_time(&next_timeout, "nexttime");
 
       // Assume timeout is true to start and reset once the heartbeat is received
       int timed_out = 1; 
@@ -104,14 +107,14 @@ int monitor_init(timeout_config_t *timeout_config) {
         int flag = 0;
         MPI_Test(&request, &flag, &status);
         if(flag) {
-          printf("Received message...\n");
+          printf("monitor_init()::Received message...\n");
           timed_out = 0;
           break;
         }
         clock_gettime(CLOCK_MONOTONIC_RAW, &current_time);
       }
       if(timed_out == 1) {
-        printf("Error, timeout hit\n");
+        printf("monitor_init()::ERROR, Timeout hit\n");
         MPI_Abort(MPI_COMM_WORLD, -1);
         monitor_finalize();
         exit(-1);

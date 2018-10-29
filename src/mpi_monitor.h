@@ -17,19 +17,24 @@
  *  tr - Timeout for the heartbeat monitor to realize it hasn't received
  *      a message from a node
  *  tw - The wait time for the heartbeat monitor to declare a node is dead
+ *  program_init: The time to allocate for program initialization before 
+ *      beginning the heartbeat monitoring
  */
 typedef struct _timeout_config {
   struct timespec thm;
   struct timespec ti;
   struct timespec tr;
   struct timespec tw;
+  struct timespec program_init;
 } timeout_config_t;
 
 /*
  * Initialize the monitor and consume the monitor process, allowing the rest of 
- * the processes to continue
+ * the processes to continue.
+ * Arguments:
+ *  tconfig: Configures the timeout wait for the heartbeat monitor
  */
-EXTC int monitor_init(timeout_config_t *);
+EXTC int monitor_init(timeout_config_t *tconfig);
 
 /*
  * Finalize and perform clean up for the monitor
