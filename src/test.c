@@ -4,7 +4,7 @@
 #include <mpi_monitor.h>
 
 int main(int argc, char** argv) {
-  timeout_config_t tconfig;
+  timeout_config_t tconfig = {0};
   tconfig.ti.tv_nsec = 500000000;
   monitor_init(&tconfig);
 
